@@ -22,17 +22,18 @@ suite('Functional Tests', function () {
         });
     });
     // #2
-    test('Test GET /hello with your name', function (done) {
+    test('Test GET /hello with no name', function (done) {
       chai
         .request(server)
-        .keepOpen()
-        .get('/hello?name=xy_z')
+        .get('/hello')
         .end(function (err, res) {
-          assert.isStatus(res, 200);
-          assert.isText(res, 'hello xy_z');
+          // Update the assertion to use isNotNull instead of assert.fail
+          assert.isNotNull(res.status);
+          assert.fail(res.text, 'hello Guest');
           done();
         });
     });
+    
     // #3
     test('Send {surname: "Colombo"}', function (done) {
       chai
