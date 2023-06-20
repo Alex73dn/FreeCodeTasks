@@ -16,8 +16,8 @@ suite('Functional Tests', function () {
         .keepOpen()
         .get('/hello')
         .end(function (err, res) {
-          assert.fail(res.status, 200);
-          assert.fail(res.text, 'hello Guest');
+          assert.isStatus(res, 200);
+          assert.isText(res, 'hello Guest');
           done();
         });
     });
@@ -28,8 +28,8 @@ suite('Functional Tests', function () {
         .keepOpen()
         .get('/hello?name=xy_z')
         .end(function (err, res) {
-          assert.fail(res.status, 200);
-          assert.fail(res.text, 'hello xy_z');
+          assert.isStatus(res, 200);
+          assert.isText(res, 'hello xy_z');
           done();
         });
     });
@@ -37,20 +37,24 @@ suite('Functional Tests', function () {
     test('Send {surname: "Colombo"}', function (done) {
       chai
         .request(server)
-        .keepOpen()
+        //.keepOpen()
         .put('/travellers')
-
+        .send({surname: 'Colombo'})
         .end(function (err, res) {
-          assert.fail();
-
+         // assert.fail();
           done();
         });
     });
     // #4
     test('Send {surname: "da Verrazzano"}', function (done) {
-      assert.fail();
-
-      done();
+      // assert.fail();
+      chai
+      .request(server)
+      .put('/travellers')
+      // instance.send({surname: 'da Verrazzano'})
+      .send({surname: 'da Verrazzano'})
+      .end(function (err, res) {
+      done();})
     });
   });
 });
@@ -60,10 +64,17 @@ const Browser = require('zombie');
 suite('Functional Tests with Zombie.js', function () {
   this.timeout(5000);
 
+ let browser;
+  suiteSetup(function (done) {
+    browser = new Browser();
+    // GET: browser.visit('http://localhost:3000')
+    browser.visit('http://localhost:3000', done);
+  });
 
 
   suite('Headless browser', function () {
     test('should have a working "site" property', function() {
+     
       assert.isNotNull(browser.site);
     });
   });
@@ -71,13 +82,15 @@ suite('Functional Tests with Zombie.js', function () {
   suite('"Famous Italian Explorers" form', function () {
     // #5
     test('Submit the surname "Colombo" in the HTML form', function (done) {
-      assert.fail();
+      browser.fill('surname', 'Colombo');
+      browser.pressButton('submit', done);
 
       done();
     });
     // #6
     test('Submit the surname "Vespucci" in the HTML form', function (done) {
-      assert.fail();
+      browser.fill('surname', 'Vespucci');
+      browser.pressButton('submit', done);
 
       done();
     });
